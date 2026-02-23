@@ -8,6 +8,25 @@ import startCleanupJob from './jobs/cleanupJob.js';
 import cors from 'cors';
 
 
+import os from "os";
+
+function getLocalNetworkIP() {
+  const interfaces = os.networkInterfaces();
+
+  for (const name of Object.keys(interfaces)) {
+    const ifaceList = interfaces[name];
+    if (!ifaceList) continue; // skip if undefined
+
+    for (const iface of ifaceList) {
+      if (iface.family === "IPv4" && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+
+  return "localhost"; // fallback
+}
+
 const app = express();
 
 const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || [];
@@ -41,5 +60,7 @@ const PORT = process.env.PORT || 5001;
   await sequelize.sync(); // creates tables if they don’t exist
   // Start automatic cleanup job
   startCleanupJob();
-  app.listen(PORT, () => console.log(`Server is running on port http://localhost:${PORT}`));
+  const host = getLocalNetworkIP();
+
+  app.listen(PORT, () => console.log(`Server is running on port http://${host}:${PORT}`));
 })();
