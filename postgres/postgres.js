@@ -1,8 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('code_share', 'ashishvora', '', {
-  host: 'localhost',
-  dialect: 'postgres',/* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
+const sequelize = new Sequelize(process.env.DATABASE, process.env.USERNAME, process.env.PASSWORD, {
+  host: process.env.HOST,
+  dialect: process.env.DIALECT,
 });
 
 const connection = async () => {
